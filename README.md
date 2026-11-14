@@ -61,7 +61,7 @@ Copy `.env.example` and fill in the values. Every variable is optional unless no
 | `OAUTH_SECRET` | Key for sealing codes, tokens and client ids (`openssl rand -hex 32`). If unset a random one is generated with a warning and every token is invalidated on restart. Rotating it invalidates all tokens |
 | `PORT` | HTTP listen port, default `8080` |
 | `PUBLIC_HOST` | Public hostname for OAuth URLs; otherwise derived from `X-Forwarded-Host`/`Host` and `X-Forwarded-Proto` |
-| `OAUTH_ALLOWED_REDIRECT_URIS` | Redirect URIs accepted at `/register` and for the static client. Defaults to the Claude.ai/.com callback URLs; add others (e.g. MCP Inspector) here |
+| `OAUTH_ALLOWED_REDIRECT_URIS` | Redirect URIs accepted at `/register` and for the static client. An entry ending in `/*` matches any URI with that prefix (scheme and host stay exact). Defaults to the Claude.ai/.com callback URLs, Google's `oauth-redirect[-sandbox|-test].googleusercontent.com/*` (Gemini) plus loopback URLs (`http://localhost`, `127.0.0.1`, `[::1]`, any port) for native clients like Gemini CLI; setting this variable replaces the defaults, loopback included; add others (e.g. MCP Inspector) here |
 | `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET` | Optional pre-registered client. Not needed with dynamic registration |
 
 ## Setup

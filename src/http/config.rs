@@ -6,8 +6,12 @@ use std::env;
 use tracing::warn;
 use uuid::Uuid;
 
-const DEFAULT_REDIRECT_URIS: &str =
-    "https://claude.ai/api/mcp/auth_callback,https://claude.com/api/mcp/auth_callback";
+/// Claude and Gemini (Google's custom-MCP redirect proxy: prod, sandbox, test).
+const DEFAULT_REDIRECT_URIS: &str = "https://claude.ai/api/mcp/auth_callback,\
+https://claude.com/api/mcp/auth_callback,\
+https://oauth-redirect.googleusercontent.com/*,\
+https://oauth-redirect-sandbox.googleusercontent.com/*,\
+https://oauth-redirect-test.googleusercontent.com/*";
 
 #[derive(Clone)]
 pub struct Config {
@@ -15,6 +19,9 @@ pub struct Config {
     pub oauth_secret: String,
     /// Redirect URIs accepted at dynamic registration and for the static client.
     pub allowed_redirect_uris: Vec<String>,
+    /// Also accept loopback redirects (`http://localhost|127.0.0.1|[::1]:<any port>/...`) for
+    /// native clients such as Gemini CLI. On only when `OAUTH_ALLOWED_REDIRECT_URIS` is unset.
+    pub allow_loopback_redirects: bool,
     /// Optional pre-registered client (`OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET`).
     pub static_client: Option<(String, String)>,
     /// `https://host` override for externally visible URLs (`PUBLIC_HOST`).
@@ -50,10 +57,10 @@ impl Config {
             (Some(id), Some(secret)) => Some((id, secret)),
             _ => None,
         };
-        let allowed_redirect_uris = split_list(
-            &nonempty("OAUTH_ALLOWED_REDIRECT_URIS")
-                .unwrap_or_else(|| DEFAULT_REDIRECT_URIS.to_string()),
-        );
+        let custom_redirects = nonempty("OAUTH_ALLOWED_REDIRECT_URIS");
+        let allow_loopback_redirects = custom_redirects.is_none();
+        let allowed_redirect_uris =
+            split_list(&custom_redirects.unwrap_or_else(|| DEFAULT_REDIRECT_URIS.to_string()));
         let public_url = nonempty("PUBLIC_HOST")
             .map(|h| {
                 let h = h.trim().trim_end_matches('/');
@@ -65,14 +72,53 @@ impl Config {
         Self {
             oauth_secret,
             allowed_redirect_uris,
+            allow_loopback_redirects,
             static_client,
             public_url,
         }
     }
 
     pub fn redirect_allowed(&self, uri: &str) -> bool {
-        self.allowed_redirect_uris.iter().any(|u| u == uri)
+        self.allowed_redirect_uris
+            .iter()
+            .any(|u| entry_matches(u, uri))
+            || (self.allow_loopback_redirects && is_loopback_redirect(uri))
     }
+}
+
+/// Exact match, or prefix match when the entry ends in `/*` (the `*` stands for anything after
+/// that slash, so the scheme and host must match exactly).
+fn entry_matches(entry: &str, uri: &str) -> bool {
+    match entry.strip_suffix('*') {
+        Some(prefix) if prefix.ends_with('/') => uri.starts_with(prefix),
+        _ => entry == uri,
+    }
+}
+
+/// `http://localhost`, `http://127.0.0.1` or `http://[::1]`, optional port, optional path.
+/// No userinfo, so `http://localhost@evil.com` does not match.
+fn is_loopback_redirect(uri: &str) -> bool {
+    let Some(rest) = uri.strip_prefix("http://") else {
+        return false;
+    };
+    let authority = rest.split(['/', '?', '#']).next().unwrap_or("");
+    let host = if let Some(v6) = authority.strip_prefix("[::1]") {
+        if !(v6.is_empty() || v6.starts_with(':')) {
+            return false;
+        }
+        return v6.is_empty() || v6[1..].bytes().all(|b| b.is_ascii_digit());
+    } else {
+        match authority.split_once(':') {
+            Some((h, port)) => {
+                if port.is_empty() || !port.bytes().all(|b| b.is_ascii_digit()) {
+                    return false;
+                }
+                h
+            }
+            None => authority,
+        }
+    };
+    matches!(host, "localhost" | "127.0.0.1")
 }
 
 #[cfg(test)]
@@ -111,6 +157,61 @@ mod tests {
         assert!(c.redirect_allowed("https://claude.com/api/mcp/auth_callback"));
         assert!(!c.redirect_allowed("https://evil.example/cb"));
         assert!(!c.redirect_allowed("https://claude.ai/api/mcp/auth_callback/"));
+    }
+
+    #[test]
+    fn google_prefix_defaults_and_wildcards() {
+        let c = test_config();
+        for ok in [
+            "https://oauth-redirect.googleusercontent.com/r/user_bound_custom-mcp-abc",
+            "https://oauth-redirect-sandbox.googleusercontent.com/a/user_bound_custom-mcp-abc",
+            "https://oauth-redirect-test.googleusercontent.com/r/x",
+        ] {
+            assert!(c.redirect_allowed(ok), "{ok}");
+        }
+        for bad in [
+            "https://oauth-redirect.googleusercontent.com.evil.com/r/x",
+            "https://oauth-redirect.googleusercontent.com@evil.com/r/x",
+            "http://oauth-redirect.googleusercontent.com/r/x",
+            "https://evil.com/https://oauth-redirect.googleusercontent.com/r/x",
+            "https://oauth-redirect.googleusercontent.com",
+        ] {
+            assert!(!c.redirect_allowed(bad), "{bad}");
+        }
+        // `*` only counts as a wildcard after a slash.
+        let c = config_from(&[(
+            "OAUTH_ALLOWED_REDIRECT_URIS",
+            "https://a.com*,https://b.com/x/*",
+        )]);
+        assert!(!c.redirect_allowed("https://a.com.evil.com/x"));
+        assert!(c.redirect_allowed("https://b.com/x/y"));
+        assert!(!c.redirect_allowed("https://b.com/xy"));
+    }
+
+    #[test]
+    fn loopback_redirects_default_only() {
+        let c = test_config();
+        for ok in [
+            "http://localhost:7777/oauth/callback",
+            "http://127.0.0.1:54321/cb",
+            "http://localhost/cb",
+            "http://[::1]:8080/cb",
+        ] {
+            assert!(c.redirect_allowed(ok), "{ok}");
+        }
+        for bad in [
+            "https://localhost:7777/cb",
+            "http://localhost@evil.com/cb",
+            "http://localhost.evil.com/cb",
+            "http://127.0.0.1.evil.com:80/cb",
+            "http://localhost:/cb",
+            "http://localhost:abc/cb",
+            "http://[::1]x/cb",
+        ] {
+            assert!(!c.redirect_allowed(bad), "{bad}");
+        }
+        let custom = config_from(&[("OAUTH_ALLOWED_REDIRECT_URIS", "https://a/cb")]);
+        assert!(!custom.redirect_allowed("http://localhost:7777/cb"));
     }
 
     #[test]
