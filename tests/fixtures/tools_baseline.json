@@ -1,0 +1,1292 @@
+{
+  "tools": [
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Add a recipe to the user's favorites. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "recipe_id": {
+            "description": "Recipe ID to add to favorites",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "recipe_id"
+        ],
+        "type": "object"
+      },
+      "name": "add_favorite_recipe"
+    },
+    {
+      "annotations": {
+        "idempotentHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Add a food item to a saved meal. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "food_id": {
+            "description": "Food ID to add",
+            "type": "integer"
+          },
+          "number_of_units": {
+            "description": "Number of serving units",
+            "type": "number"
+          },
+          "saved_meal_id": {
+            "description": "Saved meal ID",
+            "type": "integer"
+          },
+          "saved_meal_item_name": {
+            "description": "Item name",
+            "type": "string"
+          },
+          "serving_id": {
+            "description": "Serving ID",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "saved_meal_id",
+          "food_id",
+          "saved_meal_item_name",
+          "serving_id",
+          "number_of_units"
+        ],
+        "type": "object"
+      },
+      "name": "add_saved_meal_item"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get autocomplete suggestions for a partial food search expression. Premier exclusive.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "expression": {
+            "description": "Partial search expression",
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "max_results": {
+            "type": "number"
+          },
+          "region": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "expression"
+        ],
+        "type": "object"
+      },
+      "name": "autocomplete_foods"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Report which capability tier is available for the current authenticated user.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "check_auth_status"
+    },
+    {
+      "annotations": {
+        "idempotentHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Copy food entries from one date to another, optionally filtered by meal. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "from_date": {
+            "description": "Source date YYYY-MM-DD",
+            "type": "string"
+          },
+          "meal": {
+            "description": "Meal type",
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "other"
+            ],
+            "type": "string"
+          },
+          "to_date": {
+            "description": "Target date YYYY-MM-DD",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from_date",
+          "to_date"
+        ],
+        "type": "object"
+      },
+      "name": "copy_food_entries"
+    },
+    {
+      "annotations": {
+        "idempotentHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Copy entries from a saved meal to a meal on a specific date. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Date in YYYY-MM-DD format (default today)",
+            "type": "string"
+          },
+          "meal": {
+            "description": "Meal type",
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "other"
+            ],
+            "type": "string"
+          },
+          "saved_meal_id": {
+            "description": "Saved meal ID to copy",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "saved_meal_id",
+          "meal"
+        ],
+        "type": "object"
+      },
+      "name": "copy_saved_meal_entries"
+    },
+    {
+      "annotations": {
+        "idempotentHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a custom food with nutrition info. Premier exclusive. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "added_sugars": {
+            "type": "string"
+          },
+          "brand_name": {
+            "description": "Brand name",
+            "type": "string"
+          },
+          "calcium": {
+            "type": "string"
+          },
+          "calories": {
+            "description": "Calories (kcal)",
+            "type": "number"
+          },
+          "calories_from_fat": {
+            "type": "string"
+          },
+          "carbohydrate": {
+            "description": "Total carbohydrate (g)",
+            "type": "number"
+          },
+          "cholesterol": {
+            "type": "string"
+          },
+          "fat": {
+            "description": "Total fat (g)",
+            "type": "number"
+          },
+          "fiber": {
+            "type": "string"
+          },
+          "food_name": {
+            "description": "Food name",
+            "type": "string"
+          },
+          "iron": {
+            "type": "string"
+          },
+          "monounsaturated_fat": {
+            "type": "string"
+          },
+          "polyunsaturated_fat": {
+            "type": "string"
+          },
+          "potassium": {
+            "type": "string"
+          },
+          "protein": {
+            "description": "Protein (g)",
+            "type": "number"
+          },
+          "saturated_fat": {
+            "type": "string"
+          },
+          "serving_amount": {
+            "type": "string"
+          },
+          "serving_amount_unit": {
+            "type": "string"
+          },
+          "serving_size": {
+            "description": "Serving size description (e.g. \"1 slice\")",
+            "type": "string"
+          },
+          "sodium": {
+            "type": "string"
+          },
+          "sugar": {
+            "type": "string"
+          },
+          "trans_fat": {
+            "type": "string"
+          },
+          "vitamin_a": {
+            "type": "string"
+          },
+          "vitamin_c": {
+            "type": "string"
+          },
+          "vitamin_d": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "brand_name",
+          "food_name",
+          "serving_size",
+          "calories",
+          "fat",
+          "carbohydrate",
+          "protein"
+        ],
+        "type": "object"
+      },
+      "name": "create_food"
+    },
+    {
+      "annotations": {
+        "idempotentHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Add a food diary entry. Requires food_id, serving_id, and meal type. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Date in YYYY-MM-DD format (default today)",
+            "type": "string"
+          },
+          "food_entry_name": {
+            "description": "Name for the food entry",
+            "type": "string"
+          },
+          "food_id": {
+            "description": "Food ID",
+            "type": "integer"
+          },
+          "meal": {
+            "description": "Meal type",
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "other"
+            ],
+            "type": "string"
+          },
+          "number_of_units": {
+            "description": "Number of serving units",
+            "type": "number"
+          },
+          "serving_id": {
+            "description": "Serving size ID",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "food_id",
+          "food_entry_name",
+          "serving_id",
+          "number_of_units",
+          "meal"
+        ],
+        "type": "object"
+      },
+      "name": "create_food_entry"
+    },
+    {
+      "annotations": {
+        "idempotentHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Create a new saved meal. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "meals": {
+            "type": "string"
+          },
+          "saved_meal_description": {
+            "type": "string"
+          },
+          "saved_meal_name": {
+            "description": "Meal name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "saved_meal_name"
+        ],
+        "type": "object"
+      },
+      "name": "create_saved_meal"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Remove a food from the user's favorites. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "food_id": {
+            "description": "Food ID to remove from favorites",
+            "type": "integer"
+          },
+          "number_of_units": {
+            "type": "string"
+          },
+          "serving_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "food_id"
+        ],
+        "type": "object"
+      },
+      "name": "delete_favorite_food"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Remove a recipe from the user's favorites. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "recipe_id": {
+            "description": "Recipe ID to remove from favorites",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "recipe_id"
+        ],
+        "type": "object"
+      },
+      "name": "delete_favorite_recipe"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Delete a food diary entry by ID. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "food_entry_id": {
+            "description": "Food entry ID to delete",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "food_entry_id"
+        ],
+        "type": "object"
+      },
+      "name": "delete_food_entry"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Delete a saved meal. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "saved_meal_id": {
+            "description": "Saved meal ID to delete",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "saved_meal_id"
+        ],
+        "type": "object"
+      },
+      "name": "delete_saved_meal"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Remove a food item from a saved meal. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "saved_meal_item_id": {
+            "description": "Saved meal item ID to delete",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "saved_meal_item_id"
+        ],
+        "type": "object"
+      },
+      "name": "delete_saved_meal_item"
+    },
+    {
+      "annotations": {
+        "idempotentHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Shift exercise time between activities for a date. Moves minutes from one exercise to another. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Date in YYYY-MM-DD format (default today)",
+            "type": "string"
+          },
+          "kcal": {
+            "type": "number"
+          },
+          "minutes": {
+            "description": "Minutes to shift",
+            "type": "integer"
+          },
+          "shift_from_id": {
+            "description": "Exercise ID to shift time FROM",
+            "type": "integer"
+          },
+          "shift_from_name": {
+            "type": "string"
+          },
+          "shift_to_id": {
+            "description": "Exercise ID to shift time TO",
+            "type": "integer"
+          },
+          "shift_to_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "shift_to_id",
+          "shift_from_id",
+          "minutes"
+        ],
+        "type": "object"
+      },
+      "name": "edit_exercise_entries"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Edit an existing food diary entry. Cannot change the date. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "food_entry_id": {
+            "description": "Food entry ID to edit",
+            "type": "integer"
+          },
+          "food_entry_name": {
+            "type": "string"
+          },
+          "meal": {
+            "description": "Meal type",
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "other"
+            ],
+            "type": "string"
+          },
+          "number_of_units": {
+            "type": "number"
+          },
+          "serving_id": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "food_entry_id"
+        ],
+        "type": "object"
+      },
+      "name": "edit_food_entry"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Edit a saved meal name, description, or associated meals. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "meals": {
+            "type": "string"
+          },
+          "saved_meal_description": {
+            "type": "string"
+          },
+          "saved_meal_id": {
+            "description": "Saved meal ID",
+            "type": "integer"
+          },
+          "saved_meal_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "saved_meal_id"
+        ],
+        "type": "object"
+      },
+      "name": "edit_saved_meal"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Edit a food item in a saved meal (name or units). Cannot change serving_id. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "number_of_units": {
+            "type": "number"
+          },
+          "saved_meal_item_id": {
+            "description": "Saved meal item ID",
+            "type": "integer"
+          },
+          "saved_meal_item_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "saved_meal_item_id"
+        ],
+        "type": "object"
+      },
+      "name": "edit_saved_meal_item"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Find food by barcode (GTIN-13). UPC-A, EAN-13 and EAN-8 supported. Premier exclusive.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "barcode": {
+            "description": "GTIN-13 barcode number",
+            "type": "string"
+          },
+          "flag_default_serving": {
+            "type": "boolean"
+          },
+          "include_food_attributes": {
+            "type": "boolean"
+          },
+          "include_food_images": {
+            "type": "boolean"
+          },
+          "include_sub_categories": {
+            "type": "boolean"
+          },
+          "language": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "barcode"
+        ],
+        "type": "object"
+      },
+      "name": "find_food_by_barcode"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the list of food brands, optionally filtered by starting letter and type. Premier exclusive.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "brand_type": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "starts_with": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_brands"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get daily calories expended from exercise for a month. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Any date within the target month (YYYY-MM-DD)",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_exercise_entries_month"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the full list of supported exercise types and their IDs. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "get_exercises"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the user's favorite foods. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "get_favorite_foods"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the user's favorite recipes. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "get_favorite_recipes"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get detailed nutritional information for a specific food by ID. Returns servings, calories, macros, and micronutrients.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "flag_default_serving": {
+            "type": "boolean"
+          },
+          "food_id": {
+            "description": "Food ID",
+            "type": "integer"
+          },
+          "include_food_attributes": {
+            "type": "boolean"
+          },
+          "include_food_images": {
+            "type": "boolean"
+          },
+          "include_sub_categories": {
+            "type": "boolean"
+          },
+          "language": {
+            "type": "string"
+          },
+          "page_number": {
+            "type": "number"
+          },
+          "region": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "food_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_food"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the full list of food categories. Premier exclusive.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_food_categories"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get food diary entries for a date or a specific entry by ID. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Date in YYYY-MM-DD (required if food_entry_id not specified)",
+            "type": "string"
+          },
+          "food_entry_id": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_food_entries"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get daily nutrition summary for a month. Returns calories and macros per day. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Any date within the target month (YYYY-MM-DD)",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_food_entries_month"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get food sub categories for a given food category. Premier exclusive.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "food_category_id": {
+            "description": "Food category ID",
+            "type": "integer"
+          },
+          "language": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "food_category_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_food_sub_categories"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the user's most eaten foods, optionally filtered by meal. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "meal": {
+            "description": "Meal type",
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "other"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_most_eaten_foods"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get profile status information for the authenticated user. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "get_profile"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the user's recently eaten foods, optionally filtered by meal. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "meal": {
+            "description": "Meal type",
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "other"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_recently_eaten_foods"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get detailed recipe information by ID including ingredients, directions, and nutrition.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "max_results": {
+            "type": "number"
+          },
+          "page_number": {
+            "type": "number"
+          },
+          "recipe_id": {
+            "description": "Recipe ID",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "recipe_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_recipe"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the full list of supported recipe type names.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "get_recipe_types"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get all food items in a saved meal. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "saved_meal_id": {
+            "description": "Saved meal ID",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "saved_meal_id"
+        ],
+        "type": "object"
+      },
+      "name": "get_saved_meal_items"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the user's saved meals, optionally filtered by meal type. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "meal": {
+            "description": "Filter by meal type",
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "other"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_saved_meals"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Get the user's weight entries for a month. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Any date within the target month (YYYY-MM-DD)",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "get_weight_month"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Save the current day's exercise entries as a template for specified days of the week. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Date in YYYY-MM-DD format (default today)",
+            "type": "string"
+          },
+          "days": {
+            "description": "Days of week as bit flags (Sun=bit 1, Sat=bit 7), converted to int",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "days"
+        ],
+        "type": "object"
+      },
+      "name": "save_exercise_template"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Search the FatSecret food database. Returns food names, descriptions, and basic nutrition info.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "flag_default_serving": {
+            "type": "boolean"
+          },
+          "food_type": {
+            "type": "string"
+          },
+          "include_food_attributes": {
+            "type": "boolean"
+          },
+          "include_food_images": {
+            "type": "boolean"
+          },
+          "include_sub_categories": {
+            "type": "boolean"
+          },
+          "language": {
+            "type": "string"
+          },
+          "max_results": {
+            "type": "number"
+          },
+          "page_number": {
+            "type": "number"
+          },
+          "region": {
+            "type": "string"
+          },
+          "search_expression": {
+            "description": "Search query for foods",
+            "type": "string"
+          }
+        },
+        "required": [
+          "search_expression"
+        ],
+        "type": "object"
+      },
+      "name": "search_foods"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Search recipes with optional filters for calories, macros, prep time, and recipe types.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "calories.from": {
+            "type": "number"
+          },
+          "calories.to": {
+            "type": "number"
+          },
+          "carb_percentage.from": {
+            "type": "number"
+          },
+          "carb_percentage.to": {
+            "type": "number"
+          },
+          "fat_percentage.from": {
+            "type": "number"
+          },
+          "fat_percentage.to": {
+            "type": "number"
+          },
+          "max_results": {
+            "type": "number"
+          },
+          "must_have_images": {
+            "type": "boolean"
+          },
+          "page_number": {
+            "type": "number"
+          },
+          "prep_time.from": {
+            "type": "number"
+          },
+          "prep_time.to": {
+            "type": "number"
+          },
+          "protein_percentage.from": {
+            "type": "number"
+          },
+          "protein_percentage.to": {
+            "type": "number"
+          },
+          "recipe_types": {
+            "type": "string"
+          },
+          "recipe_types_matchall": {
+            "type": "boolean"
+          },
+          "search_expression": {
+            "description": "Search query for recipes",
+            "type": "string"
+          },
+          "sort_by": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "name": "search_recipes"
+    },
+    {
+      "annotations": {
+        "idempotentHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Record the user's weight for a date. First weigh-in requires goal_weight_kg and current_height_cm. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "type": "string"
+          },
+          "current_height_cm": {
+            "type": "number"
+          },
+          "current_weight_kg": {
+            "description": "Current weight in kg",
+            "type": "number"
+          },
+          "date": {
+            "description": "Date in YYYY-MM-DD format (default today)",
+            "type": "string"
+          },
+          "goal_weight_kg": {
+            "type": "number"
+          },
+          "height_type": {
+            "type": "string"
+          },
+          "weight_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "current_weight_kg"
+        ],
+        "type": "object"
+      },
+      "name": "update_weight"
+    },
+    {
+      "annotations": {
+        "idempotentHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Save a full weekly meal plan to the FatSecret food diary (one create-food-entry call per item). Input: plan JSON (days -> meals -> items with food_id, serving_id, number_of_units), start_date (YYYY-MM-DD of day 1) and overwrite. overwrite=true deletes existing diary entries of the same meal types on those dates first; overwrite=false skips plan meals whose meal type already has entries. Rate limits are retried after 30s. Reports progress as 'A of B meals processed'. Takes minutes for a full week. Requires profile auth (check_auth_status first).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "plan": {
+            "description": "Full weekly meal plan (every item needs food_id, serving_id, number_of_units)",
+            "type": "object"
+          },
+          "start_date": {
+            "description": "Date of the first plan day, YYYY-MM-DD (day N goes to start_date + N-1)",
+            "type": "string"
+          },
+          "overwrite": {
+            "description": "true: delete existing diary entries of the same meal types on the plan's dates before writing. false (default): leave those meals untouched and skip the plan meals for them.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "plan",
+          "start_date"
+        ],
+        "type": "object"
+      },
+      "name": "save_weekly_food_diary"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+target
+.env
+.env.*
+!.env.example
+.git
+.github
+.claude
+.vscode
+.DS_Store
+*.log
+tests
+CURRENT_PLAN.md
+README.md
+LICENSE
+Dockerfile
+.dockerignore

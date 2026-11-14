@@ -1,0 +1,34 @@
+[package]
+name = "fatsecret-mcp-server"
+version = "0.1.0"
+edition = "2024"
+description = "MCP server for the FatSecret API"
+license = "MIT"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+chrono = { version = "0.4", features = ["serde"] }
+axum = "0.7"
+chacha20poly1305 = "0.10"
+sha2 = "0.10"
+hmac = "0.12"
+sha1 = "0.10"
+base64 = "0.22"
+urlencoding = "2"
+uuid = { version = "1.7", features = ["v4", "fast-rng"] }
+rand = "0.9"
+rmcp = { version = "3.10.0", features = ["server", "macros", "transport-streamable-http-server"] }
+schemars = "1.2.3"
+http = "1"
+tower = { version = "0.5", features = ["util"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
